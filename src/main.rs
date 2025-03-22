@@ -1,4 +1,5 @@
 use clap::{Parser, ValueEnum};
+use colored::Colorize;
 
 /// Temperature Converter CLI
 #[derive(Parser)]
@@ -43,16 +44,16 @@ fn main() {
     match args.conversion {
         ConversionType::FtoC => {
             let converted = fahrenheit_to_celsius(args.value);
-            println!("{}°F is {:.2}°C", args.value, converted);
+            println!("{}", format!("{}°F is {:.2}°C", args.value, converted).yellow().bold());
         }
         ConversionType::CtoF => {
             let converted = celsius_to_fahrenheit(args.value);
-            println!("{}°C is {}°F", args.value, converted);
+            println!("{}", format!("{}°C is {}°F", args.value, converted).yellow().bold());
         }
     } 
 
     // Print a message to the user
-    println!("Thanks for using the temperature converter!");
+    println!("{}", "Thanks for using the temp-converter!".bold());
 
     // Exit the program
     std::process::exit(0);
