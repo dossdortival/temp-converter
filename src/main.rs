@@ -1,4 +1,29 @@
-use std::io;
+use clap::{Parser, ValueEnum};
+
+/// Temperature Converter CLI
+#[derive(Parser)]
+#[command(name = "temp-converter")]
+#[command(version = "1.0")]
+#[command(about = "Convert temperatures between Celsius and Fahrenheit", long_about = None)]
+struct Args {
+    /// Temperature value to convert
+    value: f64,
+
+    /// Conversion type
+    #[arg(value_enum)]
+    conversion: ConversionType,
+}
+
+#[derive(ValueEnum, Clone)]
+enum ConversionType {
+    /// Convert Fahrenheit to Celsius
+    #[clap(name = "ftoc")]
+    FtoC,
+
+    /// Convert Celsius to Fahrenheit
+    #[clap(name = "ctof")]
+    CtoF, 
+}
 
 // Function to convert Fahrenheit to Celsius
 fn fahrenheit_to_celsius(f: f64) -> f64 {
@@ -11,45 +36,24 @@ fn celsius_to_fahrenheit(c: f64) -> f64 {
 }
 
 fn main() {
-    println!("Temperature Converter");
-    println!("1. Fahrenheit to Celsius");
-    println!("2. Celsius to Fahrenheit");
-
-    // Get user choice
-    let choice: u8 = loop {
-        println!("Enter your choice (1 or 2):");
-        
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).expect("Failed to read input");
-
-        match input.trim().parse() {
-            Ok(1) | Ok(2) => break input.trim().parse().unwrap(),
-            _ => println!("Invalid choice. Please enter 1 or 2."),
-        }
-    };
-
-    // Get temperature input
-    let temperature: f64 = loop {
-        println!("Enter the temperature:");
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).expect("Failed to read input");
-
-        match input.trim().parse() {
-            Ok(temp) => break temp,
-            _ => println!("Invalid input. Please enter a number."),
-        }
-    };
+    // Parse command line arguments
+    let args = Args::parse();
 
     // Perform conversion based on user choice
-    match choice {
-        1 => {
-            let converted = fahrenheit_to_celsius(temperature);
-            println!("{}°F is {}°C", temperature, converted);
+    match args.conversion {
+        ConversionType::FtoC => {
+            let converted = fahrenheit_to_celsius(args.value);
+            println!("{}°F is {:.2}°C", args.value, converted);
         }
-        2 => {
-            let converted = celsius_to_fahrenheit(temperature);
-            println!("{}°C is {}°F", temperature, converted);
+        ConversionType::CtoF => {
+            let converted = celsius_to_fahrenheit(args.value);
+            println!("{}°C is {}°F", args.value, converted);
         }
-        _ => unreachable!(), // This will never happen because of the choice validation
-    }
+    } 
+
+    // Print a message to the user
+    println!("Thanks for using the temperature converter!");
+
+    // Exit the program
+    std::process::exit(0);
 }
